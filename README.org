@@ -1,0 +1,19 @@
+#+TITLE: readme: carpets
+#+AUTHOR: idsyr
+#+STARTUP: showeverything
+#+OPTIONS: toc:2
+
+* build
+#+begin_src bash
+chmod "a+x" build.sh
+./build.sh
+#+end_src
+
+* run
+#+begin_src bash
+./carpet.x
+#+end_src
+
+* usage
+- window screenshot (output/): PRTSC
+- close:                       ESC
