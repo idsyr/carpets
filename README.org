@@ -1,7 +1,9 @@
-#+TITLE: readme: carpets
 #+AUTHOR: idsyr
 #+STARTUP: showeverything
 #+OPTIONS: toc:2
+
+* result
+#+html: <p align="center"><img src="carpet_example_0.png" /></p>
 
 * build
 #+begin_src bash
