@@ -68,7 +68,7 @@ void destroy_viewport( struct Viewport * viewport ) { SDL_DestroyWindow( viewpor
 void make_screenshot( struct Surface * surface, struct Viewport * viewport ) {
   SDL_Texture * tex = SDL_CreateTexture( surface->renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_TARGET, 1000, 1000 );
   SDL_SetRenderTarget( surface->renderer, tex );
-  viewport->callback( surface, NULL );
+  viewport->callback( surface, viewport->data );
   int width, height;
   SDL_QueryTexture( tex, NULL, NULL, &width, &height );
   SDL_Surface * buff = SDL_CreateRGBSurface( 0, width, height, 32, 0, 0, 0, 0 );
@@ -84,29 +84,38 @@ key_e whichkey( SDL_KeyCode sdl_keycode ) {
       return ekey_printscreen;
     case ( SDLK_ESCAPE ):
       return ekey_escape;
+    case ( SDLK_UP ):
+      return ekey_up;
+    case ( SDLK_DOWN ):
+      return ekey_down;
+    case ( SDLK_RIGHT ):
+      return ekey_right;
+    case ( SDLK_LEFT ):
+      return ekey_left;
   }
   return ekey_undef;
 }
 
 enum pollres viewport_poll( Viewport_t * viewport, struct Surface * surface ) {
-  int       pending;
-  SDL_Event event;
-  pending = SDL_PollEvent( &event );
-
-  if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE ) {
-    exit( EXIT_SUCCESS );
-  }
-
-  if ( pending && event.type == SDL_KEYDOWN ) {
-    SDL_Keycode kc = event.key.keysym.sym;
-    viewport->input_clbk( whichkey( kc ), surface, viewport, viewport->data );
-  }
-
-  Uint32 start, elapsed, estimated = 1000 / 10;
+  Uint32 start, elapsed, estimated = 1000 / 24;
   start = SDL_GetTicks();
+  {
+    int       pending;
+    SDL_Event event;
+    pending = SDL_PollEvent( &event );
 
-  viewport->callback( surface, viewport->data );
-  SDL_RenderPresent( surface->renderer );
+    if ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE ) {
+      exit( EXIT_SUCCESS );
+    }
+
+    if ( pending && event.type == SDL_KEYDOWN ) {
+      SDL_Keycode kc = event.key.keysym.sym;
+      viewport->input_clbk( whichkey( kc ), surface, viewport, viewport->data );
+    }
+
+    viewport->callback( surface, viewport->data );
+    SDL_RenderPresent( surface->renderer );
+  }
 
   elapsed = SDL_GetTicks() - start;
   if ( elapsed < estimated )
